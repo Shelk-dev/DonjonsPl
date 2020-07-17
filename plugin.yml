@@ -1,0 +1,21 @@
+name: DonjonRL
+version: 1.0
+author: EazyEnder
+main : fr.eazyender.donjon.DonjonMain
+commands:
+  donjon:
+    description: Commande pour lancer un donjon
+    permission: admin.use
+    aliases: dj
+  gspell:
+    description: Give de spell
+    permission: admin.use
+    alisases: gsp
+  gweapon:
+    description: Give weapons
+    permission: admin.use
+    alisases: gwp
+  gpotion:
+    description: Give potions
+    permission: admin.use
+    alisases: gp
