@@ -14,10 +14,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.eazyender.donjon.arena.ArenaEvents;
+import fr.eazyender.donjon.commands.CommandAccept;
 import fr.eazyender.donjon.commands.CommandDonjon;
 import fr.eazyender.donjon.commands.CommandGivePotion;
 import fr.eazyender.donjon.commands.CommandGiveSpell;
 import fr.eazyender.donjon.commands.CommandGiveWeapon;
+import fr.eazyender.donjon.commands.CommandGroup;
+import fr.eazyender.donjon.commands.CommandMoney;
 import fr.eazyender.donjon.donjon.DonjonEvents;
 import fr.eazyender.donjon.donjon.DonjonGenerator;
 import fr.eazyender.donjon.donjon.RoomsInit;
@@ -26,7 +29,9 @@ import fr.eazyender.donjon.events.PlayerJoin;
 import fr.eazyender.donjon.events.PlayerQuit;
 import fr.eazyender.donjon.events.PortalInteract;
 import fr.eazyender.donjon.files.PlayerArena;
+import fr.eazyender.donjon.files.PlayerEconomy;
 import fr.eazyender.donjon.files.PlayerEquipment;
+import fr.eazyender.donjon.files.PlayerGroupSave;
 import fr.eazyender.donjon.files.PlayerLevelStats;
 import fr.eazyender.donjon.gui.ArenaGui;
 import fr.eazyender.donjon.gui.DonjonGui;
@@ -56,9 +61,13 @@ public class DonjonMain extends JavaPlugin{
 		PluginManager pm = getServer().getPluginManager();
 		
 		getCommand("donjon").setExecutor(new CommandDonjon());
+		getCommand("group").setExecutor(new CommandGroup());
+		getCommand("accept").setExecutor(new CommandAccept());
+		getCommand("money").setExecutor(new CommandMoney());
 		getCommand("gspell").setExecutor(new CommandGiveSpell());
 		getCommand("gpotion").setExecutor(new CommandGivePotion());
 		getCommand("gweapon").setExecutor(new CommandGiveWeapon());
+		
 		
 		ManaEvents.ManaMain();
 		
@@ -66,6 +75,8 @@ public class DonjonMain extends JavaPlugin{
 		PlayerLevelStats file_pls = new PlayerLevelStats();
 		PlayerEquipment file_eq = new PlayerEquipment();
 		PlayerArena file_arena = new PlayerArena();
+		PlayerEconomy file_economy = new PlayerEconomy();
+		PlayerGroupSave file_groups = new PlayerGroupSave();
 
 		/**UI*/
 		pm.registerEvents(new DonjonGui()	, this);
@@ -115,6 +126,8 @@ public class DonjonMain extends JavaPlugin{
 	{
 		PlayerEquipment.getPlayerEquipment().onDisable();
 		PlayerLevelStats.getPlayerLevelStats().onDisable();
+		PlayerEconomy.getEconomy().onDisable();
+		PlayerGroupSave.getPlayerGroup().onDisable();
 	}
 	
 	private void loopTabList()

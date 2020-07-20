@@ -10,7 +10,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 import fr.eazyender.donjon.DonjonMain;
 import fr.eazyender.donjon.donjon.DonjonEvents;
 import fr.eazyender.donjon.files.PlayerArena;
+import fr.eazyender.donjon.files.PlayerEconomy;
 import fr.eazyender.donjon.files.PlayerEquipment;
+import fr.eazyender.donjon.files.PlayerGroupSave;
 import fr.eazyender.donjon.files.PlayerLevelStats;
 import fr.eazyender.donjon.gui.InventoryGui;
 import net.md_5.bungee.api.ChatMessageType;
@@ -22,9 +24,11 @@ public class PlayerJoin implements Listener {
 	  public void onPlayerJoin(PlayerJoinEvent e) { 
 		
 		/* Chargement du joueur */
+		PlayerEconomy.getEconomy().loadPlayer(e.getPlayer());
 		PlayerLevelStats.getPlayerLevelStats().loadPlayer(e.getPlayer()); 
 		PlayerEquipment.getPlayerEquipment().loadPlayer(e.getPlayer());
 		PlayerArena.getPlayerArena().loadPlayer(e.getPlayer());
+		PlayerGroupSave.getPlayerGroup().loadPlayer(e.getPlayer());
 		
 		e.getPlayer().getInventory().clear();
 		InventoryGui.updateInventory(e.getPlayer());
