@@ -19,3 +19,6 @@ commands:
     description: Give potions
     permission: admin.use
     alisases: gp
+  money:
+    description: Check Money
+    permission: player.use
