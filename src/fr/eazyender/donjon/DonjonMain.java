@@ -107,13 +107,7 @@ public class DonjonMain extends JavaPlugin{
 			@Override
 			public void run() {
 				
-				for (int i = 0; i < Bukkit.getServer().getOnlinePlayers().size(); i++) {
-					List<Player> players = new ArrayList<Player>();
-					players.addAll(Bukkit.getServer().getOnlinePlayers());
-					Player player = players.get(i);
-					
-					player.setFoodLevel(20);
-				}
+				for(Player p : Bukkit.getOnlinePlayers()) p.setFoodLevel(20);
 				
 			}
 		}.runTaskTimer(this, 0, 20);
@@ -147,15 +141,15 @@ public class DonjonMain extends JavaPlugin{
 					
 					if(Bukkit.getOnlinePlayers().size() == 0) return;
 					for(Player ps : Bukkit.getOnlinePlayers()) {
-					Object header1 = new ChatComponentText("§4§lDonjon \n§7Dawn Network\n§7-------------------"); 
-					Object header2 = new ChatComponentText("§4§lDonjon \n§7By Eazy_Ender\n§7-------------------");
-					Object footer = new ChatComponentText("§r§7-------------------\n"
-							+ "§r§4§lInformations\n"
-							//+ "§eArgent : §6" + PlayerEconomy.getPlayerEconomy().getMoney(ps) + "\n"
-							+ "§7Donjons §flancés : §c" + DonjonGenerator.donjons.size() + "\n"
-							+ "§r§7-------------------\n"
-							+ "§r§7Joueurs§f en ligne : §c " + Bukkit.getServer().getOnlinePlayers().size()
-							+ "\n§r§fVersion : §cAlpha 1.0");
+					Object header1 = new ChatComponentText("Â§4Â§lDonjon \nÂ§7Dawn Network\nÂ§7-------------------"); 
+					Object header2 = new ChatComponentText("Â§4Â§lDonjon \nÂ§7By Eazy_Ender\nÂ§7-------------------");
+					Object footer = new ChatComponentText("Â§rÂ§7-------------------\n"
+							+ "Â§rÂ§4Â§lInformations\n"
+							//+ "Â§eArgent : Â§6" + PlayerEconomy.getPlayerEconomy().getMoney(ps) + "\n"
+							+ "Â§7Donjons Â§flancÃ©s : Â§c" + DonjonGenerator.donjons.size() + "\n"
+							+ "Â§rÂ§7-------------------\n"
+							+ "Â§rÂ§7JoueursÂ§f en ligne : Â§c " + Bukkit.getServer().getOnlinePlayers().size()
+							+ "\nÂ§rÂ§fVersion : Â§cAlpha 1.0");
 					if(tc) {
 						a.set(packet, header1);
 						tc = false;
