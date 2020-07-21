@@ -3,6 +3,8 @@ package fr.eazyender.donjon.gui;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.eazyender.donjon.files.PlayerGroupSave;
+import fr.eazyender.donjon.utils.PlayerGroup;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -137,11 +139,34 @@ public class InventoryGui implements Listener{
 			str_friend_no.add("§fVous pouvez inviter un ami");
 			str_friend_no.add("§fdans cet emplacement afin qu'il");
 			str_friend_no.add("§fvous rejoins pendant les donjons");
+			str_friend_no.add("§fCommande : /group invit <player>");
 			ItemStack friend_no = getCustomItemWithLore(Material.STICK,"§f§lInexistant",false,1,str_friend_no);
-			player.getInventory().setItem(27, friend_no);
-			player.getInventory().setItem(28, friend_no);
-			player.getInventory().setItem(29, friend_no);
-			player.getInventory().setItem(30, friend_no);
+
+			PlayerGroup group = PlayerGroupSave.getPlayerGroup().getGroup(player);
+			if(PlayerGroup.aGroupContainPlayer(player.getUniqueId())){
+				group = PlayerGroup.getGroupOfAPlayer(player);
+			}
+			List<Player> members = group.getPlayers();
+			for (Player p : members) {
+				if(p == player) members.remove(player);
+			}
+
+			for (int i = 0; i < 4; i++) {
+				if(i < members.size())
+				{
+					List<String> str_friend = new ArrayList<String>();
+					str_friend.add("§fJoueur : " + members.get(i).getName());
+					str_friend.add("§fRang : ");
+					str_friend.add("§fDescription : ");
+					ItemStack friend = getCustomItemWithLore(Material.STICK, "§2§lEn ligne", false, 1, str_friend);
+					if(members.get(i).isOnline()) {
+						friend = getCustomItemWithLore(Material.STICK, "§4§lDeconnecte", false, 1, str_friend);
+					}
+					player.getInventory().setItem(27+i, friend);
+				}else{
+					player.getInventory().setItem(27+i, friend_no);
+				}
+			}
 		
 		}
 		
