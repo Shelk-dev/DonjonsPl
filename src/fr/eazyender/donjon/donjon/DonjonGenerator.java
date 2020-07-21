@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import fr.eazyender.donjon.files.PlayerGroupSave;
+import fr.eazyender.donjon.utils.PlayerGroup;
 import org.bukkit.Bukkit;
 import org.bukkit.GameRule;
 import org.bukkit.Location;
@@ -34,13 +36,17 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public class DonjonGenerator {
 	
-	public static Map<Player, IDonjon> donjons = new HashMap<Player, IDonjon>();
+	public static Map<PlayerGroup, IDonjon> donjons = new HashMap<PlayerGroup, IDonjon>();
 	
-	public static void launchDonjon(Player player, int biome, int difficulty) {
-		
-		player.closeInventory();
-		player.sendTitle("§7§lDONJON EN CHARGEMENT !", "§fLa génération peux prendre du temps", 5, 20*3, 5);
-		
+	public static void launchDonjon(Player host, int biome, int difficulty) {
+
+		PlayerGroup group = PlayerGroupSave.getPlayerGroup().getGroup(host);
+
+		for (Player player : group.getPlayers()){
+			player.closeInventory();
+			player.sendTitle("§7§lDONJON EN CHARGEMENT !", "§fLa génération peux prendre du temps", 5, 20 * 3, 5);
+		}
+
 		int size = 5;
 		switch(difficulty) {
 		case 1: size = 5;
@@ -53,9 +59,9 @@ public class DonjonGenerator {
 			break;
 		}
 		
-		IDonjon donjon = DonjonGenerator.genDonjon(player, biome, size, (short)difficulty);
+		IDonjon donjon = DonjonGenerator.genDonjon(host, biome, size, (short)difficulty);
 		Location donjon_loc = donjon.getDonjon().get(0).getDoors().get(0);
-		donjon_loc.setWorld(createNewDonjon(Bukkit.getWorld("donjon_"+biome), player));
+		donjon_loc.setWorld(createNewDonjon(Bukkit.getWorld("donjon_"+biome), host));
 		
 		
 		new BukkitRunnable() {
@@ -63,67 +69,73 @@ public class DonjonGenerator {
 			@Override
 			public void run() {
 				
-				if(donjons.containsKey(player)) {
-				
-					
-				player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 1000000000, 1, true));
-				
-				if(!DonjonEvents.timer.containsKey(player)) {
-					DonjonEvents.timer.put(player, (long) 0);
-				}
-				DonjonEvents.timer.replace(player, DonjonEvents.timer.get(player)+1);
-				String seconde = "" + DonjonEvents.timer.get(player) % 60;
-				String minute = "" + (long)(DonjonEvents.timer.get(player) / 60);
-				player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§f§lTemps : §f" + minute + ":" + seconde));
-				
-				}else {
-					player.removePotionEffect(PotionEffectType.NIGHT_VISION);
-					this.cancel();
-				}
+				if(donjons.containsKey(group)) {
+
+					for (Player player : group.getPlayers()) {
+
+						player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 1000000000, 1, true));
+
+						if (!DonjonEvents.timer.containsKey(group)) {
+							DonjonEvents.timer.put(group, (long) 0);
+						}
+						DonjonEvents.timer.replace(group, DonjonEvents.timer.get(player) + 1);
+						String seconde = "" + DonjonEvents.timer.get(group) % 60;
+						String minute = "" + (long) (DonjonEvents.timer.get(group) / 60);
+						player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§f§lTemps : §f" + minute + ":" + seconde));
+					}
+					}else{
+					for (Player player : group.getPlayers()) {
+						player.removePotionEffect(PotionEffectType.NIGHT_VISION);
+					}
+						this.cancel();
+					}
+
 			}
 		}.runTaskTimer(DonjonMain.instance, 0, 20);
-		
-		if(!DonjonEvents.current_room.containsKey(player)) {
-			BossBar bossBar = Bukkit.createBossBar("Salle actuelle : 1 / " + donjon.getSize(), BarColor.WHITE, BarStyle.SOLID);
-			bossBar.addPlayer(player);
-			bossBar.setVisible(true);
-			
-			DonjonEvents.current_room.putIfAbsent(player, bossBar);
+
+		for (Player player : group.getPlayers()) {
+			if (!DonjonEvents.current_room.containsKey(player)) {
+				BossBar bossBar = Bukkit.createBossBar("Salle actuelle : 1 / " + donjon.getSize(), BarColor.WHITE, BarStyle.SOLID);
+				bossBar.addPlayer(player);
+				bossBar.setVisible(true);
+
+				DonjonEvents.current_room.putIfAbsent(player, bossBar);
 			}
-		
-		if(!DonjonEvents.current_entity.containsKey(player)) {
-		BossBar bossBar = Bukkit.createBossBar("Pas de monstres !", BarColor.GREEN, BarStyle.SOLID);
-		bossBar.addPlayer(player);
-		bossBar.setVisible(true);
-		
-		DonjonEvents.current_entity.putIfAbsent(player, bossBar);
-		}
-		
-		if(WeaponGui.weapon_choose.containsKey(player)){
-		player.getInventory().setItem(0, LootUtils.getWeaponById(WeaponGui.weapon_choose.get(player)));
-		}else {
-			
-		}
-		
-		if(SpellGui.spells_choose.containsKey(player)) {
-		 for (int i = 0; i < SpellGui.spells_choose.get(player).size(); i++) {
-			if(SpellGui.spells_choose.get(player).get(i) != 0) {
-				player.getInventory().setItem(i+1, SpellUtils.getItemSpellById(SpellGui.spells_choose.get(player).get(i)));
+
+			if (!DonjonEvents.current_entity.containsKey(player)) {
+				BossBar bossBar = Bukkit.createBossBar("Pas de monstres !", BarColor.GREEN, BarStyle.SOLID);
+				bossBar.addPlayer(player);
+				bossBar.setVisible(true);
+
+				DonjonEvents.current_entity.putIfAbsent(player, bossBar);
 			}
-		}
-		}
-		
-		if(PotionGui.potions_choose.containsKey(player)) {
-			 for (int i = 0; i < PotionGui.potions_choose.get(player).size(); i++) {
-				if(PotionGui.potions_choose.get(player).get(i) != "0:0") {
-					ItemStack potion = PotionUtils.getItemPotionById(PotionGui.potions_choose.get(player).get(i));
-					potion.setAmount(Integer.parseInt(PotionGui.potions_choose.get(player).get(i).split("\\:")[1]));
-					player.getInventory().setItem(i+4, potion);
+
+			if (WeaponGui.weapon_choose.containsKey(player)) {
+				player.getInventory().setItem(0, LootUtils.getWeaponById(WeaponGui.weapon_choose.get(player)));
+			} else {
+
+			}
+
+			if (SpellGui.spells_choose.containsKey(player)) {
+				for (int i = 0; i < SpellGui.spells_choose.get(player).size(); i++) {
+					if (SpellGui.spells_choose.get(player).get(i) != 0) {
+						player.getInventory().setItem(i + 1, SpellUtils.getItemSpellById(SpellGui.spells_choose.get(player).get(i)));
+					}
 				}
 			}
+
+			if (PotionGui.potions_choose.containsKey(player)) {
+				for (int i = 0; i < PotionGui.potions_choose.get(player).size(); i++) {
+					if (PotionGui.potions_choose.get(player).get(i) != "0:0") {
+						ItemStack potion = PotionUtils.getItemPotionById(PotionGui.potions_choose.get(player).get(i));
+						potion.setAmount(Integer.parseInt(PotionGui.potions_choose.get(player).get(i).split("\\:")[1]));
+						player.getInventory().setItem(i + 4, potion);
+					}
+				}
 			}
-		
-		player.teleport(donjon_loc);
+
+			player.teleport(donjon_loc);
+		}
 		
 	}
 	
@@ -147,9 +159,9 @@ public class DonjonGenerator {
 	     return newWorld;
 	}
 	
-	public static void delDonjon(Player player){
+	public static void delDonjon(PlayerGroup group){
 		
-		World world = player.getWorld();
+		World world = group.getHost().getWorld();
 		String name = world.getName();
 		
 		for (int i = 0; i < world.getPlayers().size(); i++) {
@@ -165,7 +177,7 @@ public class DonjonGenerator {
 		
 	     Bukkit.unloadWorld(world, false);
 	     world = null;
-		 donjons.remove(player);
+		 donjons.remove(group);
 	     
 	   deleteDir(new File(Bukkit.getServer().getWorldContainer().getPath()+ File.separator + name));
 	}
@@ -210,9 +222,9 @@ public class DonjonGenerator {
 		//BOSS ROOM
 		rooms_donjon.set(size-1, RoomUtils.getSimilarRooms(biome, 6).get(RandomNumber(0,RoomUtils.getNumberOfASimilarRoom(biome, 6)-1)));
 		
-		donjons.put(player, new IDonjon(rooms_donjon, size, biome, difficulty));
+		donjons.put(PlayerGroupSave.getPlayerGroup().getGroup(player), new IDonjon(rooms_donjon, size, biome, difficulty));
 		DonjonEvents.positionPlayer.put(player, 0);
-		DonjonEvents.maxPositionPlayer.put(player, 0);
+		DonjonEvents.maxPositionPlayer.put(PlayerGroupSave.getPlayerGroup().getGroup(player), 0);
 		DonjonEvents.travelPlayer.put(player, true);
 		return new IDonjon(rooms_donjon, size, biome, difficulty);
 	}

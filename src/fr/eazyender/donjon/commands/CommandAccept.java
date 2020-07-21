@@ -15,7 +15,7 @@ import fr.eazyender.donjon.utils.PlayerGroup;
 
 public class CommandAccept implements CommandExecutor {
 
-	private String srv_msg = "";
+	private String srv_msg = "§f[§e§lGroupe§r§f] : ";
 	
 	@Override
     public boolean onCommand(CommandSender sender, Command cmd, String msg, String[] args) {

@@ -19,7 +19,7 @@ import fr.eazyender.donjon.utils.PlayerGroup;
 public class CommandGroup implements CommandExecutor {
 
 	public static Map<UUID, List<UUID>> requests = new HashMap<UUID, List<UUID>>();
-	private static final String srv_msg = "";
+	private String srv_msg = "§f[§e§lGroupe§r§f] : ";
 	
 	@Override
     public boolean onCommand(CommandSender sender, Command cmd, String msg, String[] args) {
